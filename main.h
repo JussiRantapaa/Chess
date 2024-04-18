@@ -17,11 +17,12 @@
 #define CASTLING_MOVE       (1U<<14)
 #define EN_PASSANT_MOVE     (1U<<15)
 #define PAWN_DOUBLE_MOVE    (1U<<16)
-#define ROOK_MOVE           (1U<<17)
-#define CAPTURE_MOVE        (1U<<18)
+#define CAPTURE_MOVE        (1U<<17)
+#define ROOK_MOVE           (1U<<18)
 #define PAWN_MOVE           (1U<<19)
 #define KNIGHT_MOVE         (1U<<20)
-
+#define BISHOP_MOVE         (1U<<21)
+#define QUEEN_MOVE          (1U<<22)
 typedef struct gamestate{
     int kingpos[2];
     int turn;
@@ -64,7 +65,7 @@ void compute_bishop_moves(int row,int col,char** board,int* moves,int* move_coun
 void compute_queen_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate);
 void compute_king_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate);
 
-void compute_diagonal_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate);
+void compute_diagonal_moves(int row,int col,char** board,int* moves,int* move_count,int info,Gamestate* gamestate);
 void compute_horizontal_moves(int row,int col,char** board,int* moves,int* move_count,int info,Gamestate* gamestate);
 void compute_vertical_moves(int row,int col,char** board,int* moves,int* move_count,int info,Gamestate* gamestate);
 
