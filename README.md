@@ -9,12 +9,10 @@ The .exe is available in the file but if your windows defender gets angry just c
   - main.h definitions and function prototypes
 
 
-Architecture overview:
+Overview:
 1. Variables
     - Gamestate struct keeps track of all game variables and is passed into almost every function to avoid global variables
-    
     - White's turn is represented with 0 and blacks turn with 1, same applies to all arrays that hold piece info
-    
     - Moves and piece positions are represented with integers as follows:
       - Bits 0-5 : starting square
       - Bits 6-11: landing square
@@ -28,11 +26,11 @@ Architecture overview:
     - If king is safe we call add_move() where the move is hashed into an integer and stored in the move_list[]
         
 3. Making moves
-    - Ask user for input, hash it and see if it matches a move on the move list in test_move() and only compare position bits (0-11)
+    - Ask user for input, hash it and see if it matches a move on the move_list[] in test_move() and only compare position bits (0-11)
     - If we get a match we enter make_move() and check for bits 12- to see if the move contains special manouvers and handle them separately
     - Finally we make the move on the gameboard and update piece positions
         
-4. repeat until move_count is 0 and then handle game ending at display_winner
+4. Repeat steps 1-3 until move_count is 0 and handle game ending at display_winner
 
 
 
