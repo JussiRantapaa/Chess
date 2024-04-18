@@ -46,29 +46,34 @@ void ask_move(char **board,Gamestate* gamestate){
          for(int i=0;i < move_count;i++){
             printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
         }
+        printf("\nPAWN MOVES: ");
+        for(int i=0;i < move_count;i++){
+            if(move_list[i] & PAWN_MOVE)
+                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
+        }
+        printf("\nROOK MOVES: ");
+        for(int i=0;i < move_count;i++){
+            if(move_list[i] & ROOK_MOVE)
+                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
+        }
+        printf("\nKNIGHT MOVES: ");
+        for(int i=0;i < move_count;i++){
+            if(move_list[i] & KNIGHT_MOVE)
+                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
+        }
+        printf("\nBISHOP MOVES: ");
+        for(int i=0;i < move_count;i++){
+            if(move_list[i] & BISHOP_MOVE)
+                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
+        }
+        printf("\nQUEEN MOVES: ");
+        for(int i=0;i < move_count;i++){
+            if(move_list[i] & QUEEN_MOVE)
+                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
+        }
         printf("\nKING MOVES: ");
         for(int i=0;i < move_count;i++){
             if(move_list[i] & KING_MOVE)
-                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
-        }
-        printf("\n\nCASTLING MOVES: ");
-        for(int i=0;i < move_count;i++){
-            if(move_list[i] & CASTLING_MOVE)
-                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
-        }
-        printf("\nCAPTURE MOVES: ");
-        for(int i=0;i < move_count;i++){
-            if(move_list[i] & CAPTURE_MOVE)
-                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
-        }
-        printf("\nPAWN DOUBLE MOVES ");
-        for(int i=0;i < move_count;i++){
-            if(move_list[i] & PAWN_DOUBLE_MOVE)
-                printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
-        }
-        printf("\nEN PASSANT MOVES: ");
-        for(int i=0;i < move_count;i++){
-            if(move_list[i] & EN_PASSANT_MOVE)
                 printf("[%c%d %c%d]",(move_list[i] & 63) % 8 + 'A',((move_list[i] & 63)/ 8)+1,((move_list[i]>>6) & 63) % 8 + 'A',(( move_list[i]>>6) & 63) / 8 +1);
         }
     #endif
@@ -351,11 +356,12 @@ int is_king_threatened(int row,int col,int new_row,int new_col,char** board,int 
     // Finally we restore the board to it's original state
     
     // Get our kings coordinates from the gamestate variable
-    int king_row = decode(gamestate->kingpos[gamestate->turn],ROW);
-    int king_col = decode(gamestate->kingpos[gamestate->turn],COL);
+    int turn = gamestate->turn;
+    int king_row = decode(gamestate->kingpos[turn],ROW);
+    int king_col = decode(gamestate->kingpos[turn],COL);
 
     // En passant stuff
-    int dir = (gamestate->turn == WHITE) ? -1 : 1;
+    int dir = (turn == WHITE) ? -1 : 1;
     char en_passant_piece = EMPTY_SQUARE;
 
     // If we are moving the king, we have to refererence the new squares
@@ -373,7 +379,7 @@ int is_king_threatened(int row,int col,int new_row,int new_col,char** board,int 
     board[new_row][new_col] = board[row][col];
     board[row][col] = EMPTY_SQUARE;
 
-    int enemy_pieces = (gamestate->turn == WHITE) ? 1 : 0;
+    int enemy_pieces = (turn == WHITE) ? 1 : 0;
 
     // Run through the enemy pieces on the board
     for(int i = 0; i < gamestate->piece_count[enemy_pieces];i++){
@@ -459,7 +465,7 @@ void compute_forward_moves(int row,int col,char** board,int* moves,int* move_cou
         add_move(row,col,row + move_dir,col,moves,move_count,PAWN_MOVE);
      // Two row moves
         if(first_move && board[row + move_dir*2][col] == EMPTY_SQUARE && !is_king_threatened(row,col,row + move_dir*2,col,board,0,gamestate))
-            add_move(row,col,row + move_dir*2,col,moves,move_count,PAWN_DOUBLE_MOVE);
+            add_move(row,col,row + move_dir*2,col,moves,move_count,PAWN_DOUBLE_MOVE | PAWN_MOVE);
     }
 }
 void compute_capture_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate){
@@ -495,7 +501,7 @@ void compute_en_passant_moves(int row,int col,char** board,int* moves,int* move_
     // If previous move was a pawn double move and the column is adjacent to ours its legal
     if(abs(prev_move_col - col) == 1 && prev_move_row == row &&
         !is_king_threatened(row,col,row + dir,prev_move_col,board,EN_PASSANT_MOVE,gamestate)){
-        add_move(row,col,row + dir,prev_move_col,moves,move_count,EN_PASSANT_MOVE);
+        add_move(row,col,row + dir,prev_move_col,moves,move_count,EN_PASSANT_MOVE | PAWN_MOVE);
     }
 }
 void compute_knight_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate){
@@ -504,20 +510,20 @@ void compute_knight_moves(int row,int col,char** board,int* moves,int* move_coun
         for(int dir2 = -1; dir2 <= 1;dir2 +=2){
             int new_row = row + 2 * dir1;
             int new_col = col + 1 * dir2;
-            if(new_row >= 0 && new_row < 8 && new_col >= 0 && new_col < 8 && !is_king_threatened(row,col,new_row,new_col,board,0,gamestate)){
+            if(new_row >= 0 && new_row < 8 && new_col >= 0 && new_col < 8){
                 int current_square = get_square_status(board,new_row,new_col,gamestate);
                 //printf("COMPUTING KNIGHT MOVE %d %d to %d %d\n",row,col,new_row,new_col);
                 int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | KNIGHT_MOVE : KNIGHT_MOVE;
-                if(current_square != FRIENDLY_PIECE)
+                if(current_square != FRIENDLY_PIECE && !is_king_threatened(row,col,new_row,new_col,board,0,gamestate))
                     add_move(row,col,new_row,new_col,moves,move_count,move_info);
             }
             new_row = row + 1 * dir1;
             new_col = col + 2 * dir2;
-            if(new_row >= 0 && new_row < 8 && new_col >= 0 && new_col < 8 && !is_king_threatened(row,col,new_row,new_col,board,0,gamestate)){
+            if(new_row >= 0 && new_row < 8 && new_col >= 0 && new_col < 8){
                 int current_square = get_square_status(board,new_row,new_col,gamestate);
                 //printf("COMPUTING KNIGHT MOVE %d %d to %d %d\n",row,col,new_row,new_col);
                 int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | KNIGHT_MOVE : KNIGHT_MOVE;
-                if(current_square != FRIENDLY_PIECE)
+                if(current_square != FRIENDLY_PIECE && !is_king_threatened(row,col,new_row,new_col,board,0,gamestate))
                     add_move(row,col,new_row,new_col,moves,move_count,move_info);
             }
         }
@@ -532,10 +538,10 @@ void compute_horizontal_moves(int row,int col,char** board,int* moves,int* move_
     for(int dir = -1; dir <= 1;dir += 2){
         int new_col = col + dir;
         int current_square = EMPTY_SQUARE;
-        while(new_col < 8 && new_col >= 0 && current_square == EMPTY_SQUARE && !is_king_threatened(row,col,row,new_col,board,0,gamestate)){
+        while(new_col < 8 && new_col >= 0 && current_square == EMPTY_SQUARE){
             current_square = get_square_status(board,row,new_col,gamestate);
-            int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | info : NORMAL_MOVE | info;
-            if(current_square == EMPTY_SQUARE || current_square == ENEMY_PIECE){
+            int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | info : info;
+            if(current_square != FRIENDLY_PIECE  && !is_king_threatened(row,col,row,new_col,board,0,gamestate)){
                 add_move(row,col,row,new_col,moves,move_count,move_info);
             }
             new_col += dir;
@@ -545,30 +551,30 @@ void compute_horizontal_moves(int row,int col,char** board,int* moves,int* move_
 void compute_vertical_moves(int row,int col,char** board,int* moves,int* move_count, int info,Gamestate* gamestate){
     // Loop possible moves downwards and upwards
     for(int dir = -1; dir <= 1;dir += 2){
-        int current_square = EMPTY_SQUARE;
         int new_row = row + dir;
+        int current_square = EMPTY_SQUARE;
         // While move is in bounds and current square is empty continue looping
-        while(new_row < 8 && new_row >= 0 && current_square == EMPTY_SQUARE && !is_king_threatened(row,col,new_row,col,board,0,gamestate)){
+        while(new_row < 8 && new_row >= 0 && current_square == EMPTY_SQUARE){
             current_square = get_square_status(board,new_row,col,gamestate);
-            int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | info : NORMAL_MOVE | info;
-            if(current_square == EMPTY_SQUARE || current_square == ENEMY_PIECE)
+            int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | info : info;
+        if(current_square != FRIENDLY_PIECE && !is_king_threatened(row,col,new_row,col,board,0,gamestate)){
                 add_move(row,col,new_row,col,moves,move_count,move_info);
+            }
             new_row += dir;
         }
     }
 }
-void compute_diagonal_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate){
+void compute_diagonal_moves(int row,int col,char** board,int* moves,int* move_count,int info,Gamestate* gamestate){
     for(int dir1 = -1;dir1 <= 1; dir1 += 2){
         for(int dir2 = -1;dir2 <= 1;dir2 += 2){
             int current_square = EMPTY_SQUARE;
             int new_row = row + dir1;
             int new_col = col + dir2;
-            while(new_row < 8 && new_row >= 0 && new_col < 8 && new_col >= 0 && current_square == EMPTY_SQUARE &&
-                !is_king_threatened(row,col,new_row,new_col,board,0,gamestate)){
+            while(new_row < 8 && new_row >= 0 && new_col < 8 && new_col >= 0 && current_square == EMPTY_SQUARE){
 
                 current_square = get_square_status(board,new_row,new_col,gamestate);
-                int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE : NORMAL_MOVE;
-                if(current_square == EMPTY_SQUARE || current_square == ENEMY_PIECE){
+                int move_info = (current_square == ENEMY_PIECE) ? CAPTURE_MOVE | info : info;
+                if(current_square != FRIENDLY_PIECE && !is_king_threatened(row,col,new_row,new_col,board,0,gamestate)){
                     add_move(row,col,new_row,new_col,moves,move_count,move_info);
                 }   
                 new_row += dir1;
@@ -578,12 +584,12 @@ void compute_diagonal_moves(int row,int col,char** board,int* moves,int* move_co
     }
 }
 void compute_bishop_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate){
-    compute_diagonal_moves(row,col,board,moves,move_count,gamestate);
+    compute_diagonal_moves(row,col,board,moves,move_count,BISHOP_MOVE,gamestate);
 }
 void compute_queen_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate){
-    compute_vertical_moves(row,col,board,moves,move_count,NORMAL_MOVE,gamestate);
-    compute_horizontal_moves(row,col,board,moves,move_count,NORMAL_MOVE,gamestate);
-    compute_diagonal_moves(row,col,board,moves,move_count,gamestate);
+    compute_vertical_moves(row,col,board,moves,move_count,QUEEN_MOVE,gamestate);
+    compute_horizontal_moves(row,col,board,moves,move_count,QUEEN_MOVE,gamestate);
+    compute_diagonal_moves(row,col,board,moves,move_count,QUEEN_MOVE,gamestate);
 }
 void compute_rook_moves(int row,int col,char** board,int* moves,int* move_count,Gamestate* gamestate){
     compute_horizontal_moves(row,col,board,moves,move_count,ROOK_MOVE,gamestate);
